@@ -1,25 +1,27 @@
 <?php
 
 /**
- * Breadcrumbs
+ * Breadcrumb
  *
  * @author Mafel John Cahucom <mafeljohn.timkang.cahucom070596@gmail.com>
  * @since 1.0.0
  */
 
-final class Breadcrumbs {
+namespace App\Inc\Breadcrumb;
+
+final class Breadcrumb {
 
 	// separator
 	private $separator = '/';
 
 	// homepage title
-	private $home_title = 'Home';
+	private $homeTitle = 'Home';
 
 	// search prefix
-	private $search_prefix = 'Search result for';
+	private $searchPrefix = 'Search result for';
 
 	// archive prefix
-	private $archive_prefix = 'Archives for ';
+	private $archivePrefix = 'Archives for ';
 
 
 	/**
@@ -34,15 +36,15 @@ final class Breadcrumbs {
 		}
 
 		if( isset( $args['home_title'] ) ) {
-			$this->home_title = $args['home_title'];
+			$this->homeTitle = $args['home_title'];
 		}
 
 		if( isset( $args['search_prefix'] ) ) {
-			$this->search_prefix = $args['search_prefix'];
+			$this->searchPrefix = $args['search_prefix'];
 		}
 
 		if( isset( $args['archive_prefix'] ) ) {
-			$this->archive_prefix = $args['archive_prefix'];
+			$this->archivePrefix = $args['archive_prefix'];
 		}
 
 		return $this;
@@ -62,14 +64,14 @@ final class Breadcrumbs {
 			$output = '<div class="breadcrumbs">';
 
 			// home
-			$output .= $this->get_home() . $this->get_separator();
+			$output .= $this->getHome() . $this->getSeparator();
 
 
 			// category post type: post
 			if( is_category() ) {
-				$output .= $this->get_post_link( get_option('page_for_posts') ).
-						   $this->get_separator().
-						   $this->get_current_link( single_cat_title( $this->archive_prefix, false ) );
+				$output .= $this->getPostLink( get_option('page_for_posts') ).
+						   $this->getSeparator().
+						   $this->getCurrentLink( single_cat_title( $this->archivePrefix, false ) );
 			}
 
 
@@ -82,17 +84,17 @@ final class Breadcrumbs {
 			    );
 
 				if( is_day() ) {
-					$output .= $this->get_date_link( 'year', $date ).
-						   	   $this->get_separator().
-						   	   $this->get_date_link( 'month', $date ).
-						       $this->get_separator().
-						       $this->get_current_link( $this->archive_prefix .' '. $date['d'] );
+					$output .= $this->getDateLink( 'year', $date ).
+						   	   $this->getSeparator().
+						   	   $this->getDateLink( 'month', $date ).
+						       $this->getSeparator().
+						       $this->getCurrentLink( $this->archivePrefix .' '. $date['d'] );
 				}elseif( is_month() ) {
-					$output .= $this->get_date_link( 'year', $date ).
-						   	   $this->get_separator().
-						   	   $this->get_current_link( $this->archive_prefix .' '. $date['m'] );
+					$output .= $this->getDateLink( 'year', $date ).
+						   	   $this->getSeparator().
+						   	   $this->getCurrentLink( $this->archivePrefix .' '. $date['m'] );
 				}elseif( is_year() ) {
-					$output .= $this->get_current_link( $this->archive_prefix .' '. $date['y'] );
+					$output .= $this->getCurrentLink( $this->archivePrefix .' '. $date['y'] );
 				}
 			}
 
@@ -102,9 +104,9 @@ final class Breadcrumbs {
 				// post type - portfolio
 				if( get_post_type( get_the_ID() ) == 'portfolio' ) {
 					$term = get_the_terms( get_the_ID(), 'portfolio-tax' )[0];
-					$output .= $this->get_post_link( 56 ).
-							   $this->get_separator().
-							   $this->get_current_link( $term->name );
+					$output .= $this->getPostLink( 56 ).
+							   $this->getSeparator().
+							   $this->getCurrentLink( $term->name );
 				}
 			}
 			
@@ -118,18 +120,18 @@ final class Breadcrumbs {
 					// grand parent
 					if( wp_get_post_parent_id( $parent_id ) > 0 ) {
 						$grand_parent_id = wp_get_post_parent_id( $parent_id );
-						$output .= $this->get_post_link( $grand_parent_id ).
-								   $this->get_separator().
-								   $this->get_post_link( $parent_id ).
-								   $this->get_separator().
-								   $this->get_current_link( get_the_title() );
+						$output .= $this->getPostLink( $grand_parent_id ).
+								   $this->getSeparator().
+								   $this->getPostLink( $parent_id ).
+								   $this->getSeparator().
+								   $this->getCurrentLink( get_the_title() );
 					}else{
-						$output .= $this->get_post_link( $parent_id ).
-								   $this->get_separator().
-								   $this->get_current_link( get_the_title() );
+						$output .= $this->getPostLink( $parent_id ).
+								   $this->getSeparator().
+								   $this->getCurrentLink( get_the_title() );
 					}
 				}else{
-					$output .= $this->get_current_link( get_the_title() );
+					$output .= $this->getCurrentLink( get_the_title() );
 				}
 			}
 
@@ -138,7 +140,7 @@ final class Breadcrumbs {
 			if( is_home() ) {
 				$post_id = get_option( 'page_for_posts' );
 				if( $post_id ) {
-					$output .= $this->get_current_link( get_the_title( $post_id ) );
+					$output .= $this->getCurrentLink( get_the_title( $post_id ) );
 				}
 			}
 
@@ -147,16 +149,16 @@ final class Breadcrumbs {
 			if( is_single() ) {
 				if( get_post_type( get_the_ID() ) == 'post' ) {
 					// post type: post
-					$output .= $this->get_post_link( get_option('page_for_posts') ).
-							   $this->get_separator().
-							   $this->get_current_link( get_the_title() );
+					$output .= $this->getPostLink( get_option('page_for_posts') ).
+							   $this->getSeparator().
+							   $this->getCurrentLink( get_the_title() );
 				}else{
 					// post type: portfolio
 					if( is_singular( 'portfolio' ) ) {
 						$portfolio_page_id = 56;
-						$output .= $this->get_post_link( $portfolio_page_id ).
-								   $this->get_separator().
-								   $this->get_current_link( get_the_title() );
+						$output .= $this->getPostLink( $portfolio_page_id ).
+								   $this->getSeparator().
+								   $this->getCurrentLink( get_the_title() );
 					}
 				}
 			}
@@ -164,14 +166,14 @@ final class Breadcrumbs {
 
 			// search page
 			if( is_search() ) {
-				$search_title = $this->search_prefix .' "'. get_search_query() .'"';
-				$output .= $this->get_current_link( $search_title );
+				$search_title = $this->searchPrefix .' "'. get_search_query() .'"';
+				$output .= $this->getCurrentLink( $search_title );
 			}
 
 
 			// 404 page
 			if( is_404() ) {
-				$output .= $this->get_current_link('Not Found');
+				$output .= $this->getCurrentLink('Not Found');
 			}
 
 
@@ -183,8 +185,8 @@ final class Breadcrumbs {
 	}
 
 
-	private function get_home() {
-		$output = '<a class="brd__home" href="'. home_url() .'">'. $this->home_title .'</a>';
+	private function getHome() {
+		$output = '<a class="brd__home" href="'. home_url() .'">'. $this->homeTitle .'</a>';
 		return $output;
 	}
 
@@ -193,7 +195,7 @@ final class Breadcrumbs {
 	 * Output the separator with tag
 	 * @return
 	 */
-	private function get_separator() {
+	private function getSeparator() {
 		$output = '<span class="separator">'. $this->separator .'</span>';
 		return $output;
 	}
@@ -202,15 +204,15 @@ final class Breadcrumbs {
 	 * Output link by given id
 	 * @return [type] [description]
 	 */
-	private function get_post_link( $post_id ) {
-		return $this->get_link( get_the_title( $post_id ), get_permalink( $post_id ) );
+	private function getPostLink( $post_id ) {
+		return $this->getLink( get_the_title( $post_id ), get_permalink( $post_id ) );
 	}
 
 
 	/**
 	 * Output the link tag
 	 */
-	private function get_link( $title, $link ) {
+	private function getLink( $title, $link ) {
 		return '<a href="'. $link .'">'. $title .'</a>';
 	}
 
@@ -218,13 +220,13 @@ final class Breadcrumbs {
 	/**
 	 * Output date link
 	 */
-	private function get_date_link( $format, $date ) {
+	private function getDateLink( $format, $date ) {
 		if( $format == 'day' ) {
-			$output = $this->get_link( $date['d'], get_day_link( $date['y'], $date['m'], $date['d'] ) );
+			$output = $this->getLink( $date['d'], get_day_link( $date['y'], $date['m'], $date['d'] ) );
 		}elseif( $format == 'month' ) {
-			$output = $this->get_link( $date['m'], get_month_link( $date['y'], $date['m'] ) );
+			$output = $this->getLink( $date['m'], get_month_link( $date['y'], $date['m'] ) );
 		}elseif( $format == 'year' ) {
-			$output = $this->get_link( $date['y'], get_year_link( $date['y'] ) );
+			$output = $this->getLink( $date['y'], get_year_link( $date['y'] ) );
 		}
 		return $output;
 	}
@@ -233,7 +235,7 @@ final class Breadcrumbs {
 	/**
 	 * Output the current link tag
 	 */
-	private function get_current_link( $title ) {
+	private function getCurrentLink( $title ) {
 		return '<span class="current">'. $title .'</span>';
 	}
 }
