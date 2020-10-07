@@ -67,11 +67,11 @@ final class Breadcrumb {
 			$output .= $this->getHome() . $this->getSeparator();
 
 
-			// category post type: post
-			if( is_category() ) {
+			// category or tag with post type: post
+			if( is_category() || is_tag() ) {
 				$output .= $this->getPostLink( get_option('page_for_posts') ).
 						   $this->getSeparator().
-						   $this->getCurrentLink( single_cat_title( $this->archivePrefix, false ) );
+						   $this->getCurrentLink( single_cat_title( $this->archivePrefix . ' ', false ) );
 			}
 
 
@@ -83,20 +83,33 @@ final class Breadcrumb {
 			        'y' => get_the_date( 'Y' )
 			    );
 
-				if( is_day() ) {
-					$output .= $this->getDateLink( 'year', $date ).
+				if( is_date() ) {
+					if( is_day() ) {
+						$output .= $this->getPostLink( get_option('page_for_posts') ).
+						   	   	   $this->getSeparator().
+								   $this->getDateLink( 'year', $date ).
+							   	   $this->getSeparator().
+							   	   $this->getDateLink( 'month', $date ).
+							       $this->getSeparator().
+							       $this->getCurrentLink( $this->archivePrefix . ' day ' .' '. $date['d'] );
+					}elseif( is_month() ) {
+						$output .= $this->getPostLink( get_option('page_for_posts') ).
+						   	       $this->getSeparator().
+								   $this->getDateLink( 'year', $date ).
+							   	   $this->getSeparator().
+							   	   $this->getCurrentLink( $this->archivePrefix . ' month ' .' '. $date['m'] );
+					}elseif( is_year() ) {
+						$output .= $this->getPostLink( get_option('page_for_posts') ).
+						   	   	   $this->getSeparator().
+								   $this->getCurrentLink( $this->archivePrefix . ' year ' .' '. $date['y'] );
+					}
+				}elseif( is_author() ) {
+					$output .= $this->getPostLink( get_option('page_for_posts') ).
 						   	   $this->getSeparator().
-						   	   $this->getDateLink( 'month', $date ).
-						       $this->getSeparator().
-						       $this->getCurrentLink( $this->archivePrefix .' '. $date['d'] );
-				}elseif( is_month() ) {
-					$output .= $this->getDateLink( 'year', $date ).
-						   	   $this->getSeparator().
-						   	   $this->getCurrentLink( $this->archivePrefix .' '. $date['m'] );
-				}elseif( is_year() ) {
-					$output .= $this->getCurrentLink( $this->archivePrefix .' '. $date['y'] );
+							   $this->getCurrentLink( get_the_author_meta('display_name') );
 				}
 			}
+
 
 
 			// taxonomy
